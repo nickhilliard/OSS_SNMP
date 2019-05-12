@@ -184,12 +184,34 @@ class FDB extends \OSS_SNMP\MIB
         }
 
         if (!$vlanmapping) {
+            # Juniper KB32532:
+            #
+            # We start out with two arrays, jnxL2aldVlanTag and jnxL2aldVlanFdbId.  We need to
+            # end up with a mapping from the value of jnxL2aldVlanFdbId pointing to the
+            # value of jnxL2aldVlanTag.
+            #
+            # jnxL2aldVlanTag.3 = 1
+            # jnxL2aldVlanTag.4 = 10
+            # jnxL2aldVlanTag.5 = 20
+            # jnxL2aldVlanFdbId.3 = 196608
+            # jnxL2aldVlanFdbId.4 = 262144
+            # jnxL2aldVlanFdbId.5 = 327680
+            #
+            # This gets mapped to
+            # array (
+            #	196608 => 1,
+            #	262144 => 10,
+            #	327680 => 20
+            # )
             $jnxL2aldvlantag = $this->snmpwalk2hash($oids['jnxL2aldVlanTag'], false, false, false);
             if ($jnxL2aldvlantag) {
                 if ($debug) { print "DEBUG: $host: looks like this is a Juniper EX running an ELS image\n"; }
-#                $jnxL2aldvlanid = $this->snmpwalk2hash($oids['jnxL2aldVlanFdbId'], sub { return $jnxL2aldvlantag->{$_[0]} }, false, false );
                 $jnxL2aldvlanid = $this->snmpwalk2hash($oids['jnxL2aldVlanFdbId'], false, false, false );
-                $vlanmapping = $this->array_reverse($jnxL2aldvlanid);
+
+                foreach (array_keys($jnxL2aldvlantag) as $index) {
+                    $vlanmapping[$jnxL2aldvlanid[$index]] = $jnxL2aldvlantag[$index];
+                }
+
                 if (!$vlanmapping) {
                     print "WARNING: $host: Juniper ELS image detected but VLAN mapping retrieval failed. Not processing $host further.\n";
                     return;
