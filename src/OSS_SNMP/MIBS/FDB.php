@@ -149,7 +149,7 @@ class FDB extends \OSS_SNMP\MIB
 
         $sysdescr = $this->snmpwalk2hash($oids['sysDescr'], false, false, false);
 
-        if (preg_match('/Cisco\s+(NX-OS|IOS)/', $sysdescr->{'0'})) {
+        if (preg_match('/Cisco\s+(NX-OS|IOS)/', $sysdescr[0])) {
             if (!defined ($vlan) || $vlan == 0) {
                 print "ERROR: $host: must specify VLAN for Cisco IOS/NX-OS switches\n";
                 return;
