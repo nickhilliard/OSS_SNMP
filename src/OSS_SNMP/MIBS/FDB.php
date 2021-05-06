@@ -120,7 +120,7 @@ class FDB extends \OSS_SNMP\MIB
         } catch (\Exception $e) {
             $foo = array ();
         }
-        
+
         return $foo;
     }
 
@@ -132,7 +132,6 @@ class FDB extends \OSS_SNMP\MIB
         $host = $this->getSNMP()->getHost();
 
         $oids = array (
-                                    
             'sysDescr'              => '.1.3.6.1.2.1.1.1',
             'ifDescr'               => '.1.3.6.1.2.1.2.2.1.2',
             'dot1dBasePortIfIndex'  => '.1.3.6.1.2.1.17.1.4.1.2',
@@ -171,7 +170,7 @@ class FDB extends \OSS_SNMP\MIB
         }
 
         if ($debug) { print "DEBUG: $host: pre-emptively trying Juniper jnxExVlanTag to see if we're on a J-EX box (" . $oids['jnxExVlanTag'] . ")\n"; }
-        
+
         $vlanmapping = $this->snmpwalk2hash($oids['jnxExVlanTag'], false, false, false);
 
         # if jnxExVlanTag returns something, then this is a juniper and we need to
@@ -228,7 +227,7 @@ class FDB extends \OSS_SNMP\MIB
             if (!$vlanmapping) {
                 $vlanmapping = $this->snmpwalk2hash($oids['dot1qVlanFdbId'].".0", false, false, false);
             }
-            
+
             # At this stage we should have a dot1qVlanFdbId mapping, but
             # some switches don't support it (e.g.  Dell F10-S4810), so
             # if it doesn't exist we'll attempt Q-BRIDGE-MIB with the
@@ -278,7 +277,7 @@ class FDB extends \OSS_SNMP\MIB
                 } else {
                     print "DEBUG: $host: failed Juniper EX Q-BRIDGE-MIB retrieval\n";
                 }
-            }            
+            }
         }
 
         # if vlan wasn't specified or there's nothing coming in from the
@@ -356,7 +355,7 @@ class FDB extends \OSS_SNMP\MIB
 
             $returnhash[$returnoid] = $descr;
         }
-        
+
         return ($returnhash);
     }
 
@@ -370,7 +369,7 @@ class FDB extends \OSS_SNMP\MIB
         foreach ($hextets as $hex) {
             $hexmac .= sprintf ('%02x', $hex);
         }
-            
+
         return $hexmac;
     }
 
@@ -380,14 +379,14 @@ class FDB extends \OSS_SNMP\MIB
         if (!isset ($mac)) {
             return;
         }
-        
+
         # translate this OCTET_STRING to hexadecimal, unless already translated
         if ( strlen ($mac) != 12 ) {
                 $mac = bin2hex(stripslashes($mac));
         }
-    
+
         $mac = strtolower($mac);
-    
+
         return ($mac);
     }
 
@@ -401,7 +400,7 @@ class FDB extends \OSS_SNMP\MIB
         foreach (array_keys($array) as $key) {
             $reverse[$array[$key]] = $key;
         }
-    
+
         return $reverse;
     }
 
